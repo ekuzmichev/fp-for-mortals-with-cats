@@ -24,32 +24,36 @@ ThisBuild / description := "Solutions/samples for \"Functional Programming for M
 ThisBuild / licenses := List("MIT" -> url("http://opensource.org/licenses/MIT"))
 ThisBuild / homepage := Some(url(s"https://github.com/ekuzmichev/$projectName"))
 
-ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / scalaVersion := scalaV
 ThisBuild / scalacOptions ++= Seq(
   "-language:_",
   "-Ypartial-unification",
   "-Xfatal-warnings"
 )
 
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel"   %% "kind-projector" % "0.11.0" cross CrossVersion.full)
+addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.1" cross CrossVersion.full)
 
 lazy val root = (project in file("."))
   .settings(
     name := projectName,
     libraryDependencies ++= Seq(
       libs.catsCore,
+      libs.scalaReflect,
       libs.simulacrum,
       libs.scalaTest % Test
     )
   )
+
+lazy val scalaV = "2.12.8"
 
 lazy val libs = new {
   val catsV       = "2.1.1"
   val scalaTestV  = "3.1.1"
   val simulacrumV = "1.0.0"
 
-  val scalaTest  = "org.scalatest" %% "scalatest"  % scalaTestV
-  val simulacrum = "org.typelevel" %% "simulacrum" % simulacrumV
-  val catsCore   = "org.typelevel" %% "cats-core"  % catsV
+  val scalaReflect = "org.scala-lang" % "scala-reflect" % scalaV
+  val scalaTest    = "org.scalatest"  %% "scalatest"    % scalaTestV
+  val simulacrum   = "org.typelevel"  %% "simulacrum"   % simulacrumV
+  val catsCore     = "org.typelevel"  %% "cats-core"    % catsV
 }
