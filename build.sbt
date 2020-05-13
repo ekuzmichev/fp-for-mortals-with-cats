@@ -39,6 +39,7 @@ lazy val root = (project in file("."))
     name := projectName,
     libraryDependencies ++= Seq(
       libs.catsCore,
+      libs.mouse,
       libs.scalaReflect,
       libs.simulacrum,
       libs.scalaTest % Test
@@ -49,11 +50,13 @@ lazy val scalaV = "2.12.8"
 
 lazy val libs = new {
   val catsV       = "2.1.1"
+  val mouseV      = "0.24"
   val scalaTestV  = "3.1.1"
   val simulacrumV = "1.0.0"
 
+  val catsCore     = "org.typelevel"  %% "cats-core"    % catsV
+  val mouse        = "org.typelevel"  %% "mouse"        % mouseV
   val scalaReflect = "org.scala-lang" % "scala-reflect" % scalaV
   val scalaTest    = "org.scalatest"  %% "scalatest"    % scalaTestV
   val simulacrum   = "org.typelevel"  %% "simulacrum"   % simulacrumV
-  val catsCore     = "org.typelevel"  %% "cats-core"    % catsV
 }
