@@ -1,4 +1,4 @@
-val projectName = "project-name" // TODO: Change it
+val projectName = "fp-for-mortals-with-cats"
 
 ThisBuild / organization := "io.github.ekuzmichev"
 ThisBuild / organizationName := "ekuzmichev"
@@ -20,41 +20,33 @@ ThisBuild / developers := List(
   )
 )
 
-ThisBuild / description := "Some description" // TODO: Change it
+ThisBuild / description := "Solutions/samples for \"Functional Programming for Mortals with Cats\""
 ThisBuild / licenses := List("MIT" -> url("http://opensource.org/licenses/MIT"))
 ThisBuild / homepage := Some(url(s"https://github.com/ekuzmichev/$projectName"))
 
-ThisBuild / pomIncludeRepository := { _ => false }
-ThisBuild / publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
-ThisBuild / publishMavenStyle := true
-
 ThisBuild / scalaVersion := "2.12.8"
-ThisBuild / crossScalaVersions := Seq("2.12.8", "2.13.1")
-ThisBuild / scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
-ThisBuild / releaseCrossBuild := true
-
-val crossScalaOptions = Seq("-unchecked", "-deprecation")
-def scalacOptionsVersion(scalaVersion: String) =
-  CrossVersion.partialVersion(scalaVersion) match {
-    case Some((2, 13)) => crossScalaOptions
-    case _             => crossScalaOptions :+ "-Ypartial-unification"
-  }
+ThisBuild / scalacOptions ++= Seq(
+    "-language:_",
+    "-Ypartial-unification",
+    "-Xfatal-warnings"
+  )
 
 lazy val root = (project in file("."))
   .settings(
     name := projectName,
     libraryDependencies ++= Seq(
+      libs.catsCore,
+      libs.simulacrum,
       libs.scalaTest % Test
-    ),
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value
+    )
   )
 
 lazy val libs = new {
+  val catsV = "2.1.1"
   val scalaTestV = "3.1.1"
+  val simulacrumV = "1.0.0"
 
   val scalaTest = "org.scalatest" %% "scalatest" % scalaTestV
+  val simulacrum = "org.typelevel" %% "simulacrum" % simulacrumV,
+  val catsCore = "org.typelevel" %% "cats-core" % catsV
 }
