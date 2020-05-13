@@ -26,10 +26,10 @@ ThisBuild / homepage := Some(url(s"https://github.com/ekuzmichev/$projectName"))
 
 ThisBuild / scalaVersion := "2.12.8"
 ThisBuild / scalacOptions ++= Seq(
-    "-language:_",
-    "-Ypartial-unification",
-    "-Xfatal-warnings"
-  )
+  "-language:_",
+  "-Ypartial-unification",
+  "-Xfatal-warnings"
+)
 
 lazy val root = (project in file("."))
   .settings(
@@ -42,11 +42,11 @@ lazy val root = (project in file("."))
   )
 
 lazy val libs = new {
-  val catsV = "2.1.1"
-  val scalaTestV = "3.1.1"
+  val catsV       = "2.1.1"
+  val scalaTestV  = "3.1.1"
   val simulacrumV = "1.0.0"
 
-  val scalaTest = "org.scalatest" %% "scalatest" % scalaTestV
-  val simulacrum = "org.typelevel" %% "simulacrum" % simulacrumV,
-  val catsCore = "org.typelevel" %% "cats-core" % catsV
+  val scalaTest  = "org.scalatest" %% "scalatest"  % scalaTestV
+  val simulacrum = "org.typelevel" %% "simulacrum" % simulacrumV
+  val catsCore   = "org.typelevel" %% "cats-core"  % catsV
 }
