@@ -1,8 +1,9 @@
 package ru.ekuzmichev.fp_for_mortals_with_cats
 
 object `3. Application Design` {
-  import scala.concurrent.duration._
   import cats.data.NonEmptyList
+
+  import scala.concurrent.duration._
   import scala.language.higherKinds
 
   final case class Epoch(millis: Long) extends AnyVal {
@@ -11,8 +12,8 @@ object `3. Application Design` {
   }
 
   import java.time.Instant
-  import contextual.Verifier
-  import contextual.Prefix
+
+  import contextual.{Prefix, Verifier}
 
   object EpochInterpolator extends Verifier[Epoch] {
     def check(s: String): Either[(Int, String), Epoch] =
@@ -54,19 +55,15 @@ object `3. Application Design` {
   }
 
   import cats.Monad
-  import cats.syntax.flatMap._
+  import cats.syntax.apply._
   import cats.syntax.functor._
 
   final class DynAgentsModule[F[_]: Monad](D: Drone[F], M: Machines[F]) extends DynAgents[F] {
 
     override def initial: F[WorldView] =
-      for {
-        db <- D.getBacklog
-        da <- D.getAgents
-        mm <- M.getManaged
-        ma <- M.getAlive
-        mt <- M.getTime
-      } yield WorldView(db, da, mm, ma, Map.empty, mt)
+      (D.getBacklog, D.getAgents, M.getManaged, M.getAlive, M.getTime).mapN {
+        case (db, da, mm, ma, mt) => WorldView(db, da, mm, ma, Map.empty, mt)
+      }
 
     override def update(old: WorldView): F[WorldView] =
       for {
@@ -80,7 +77,6 @@ object `3. Application Design` {
 
     private def symdiff[T](a: Set[T], b: Set[T]): Set[T] = (a union b) -- (a intersect b)
 
-    import cats.syntax.foldable._
     import cats.syntax.applicative._
 
     override def act(world: WorldView): F[WorldView] = world match {
@@ -91,12 +87,11 @@ object `3. Application Design` {
         } yield update
 
       case Stale(nodes) =>
-        nodes.foldLeftM(world) { (world, n) =>
-          for {
-            _      <- M.stop(n)
-            update = world.copy(pending = world.pending + (n -> world.time))
-          } yield update
-        }
+        for {
+          stopped <- nodes.traverse(M.stop)
+          updates = stopped.map(_ -> world.time).toList.toMap
+          update = world.copy(pending = world.pending ++ updates)
+        } yield update
 
       case _ => world.pure[F]
     }
